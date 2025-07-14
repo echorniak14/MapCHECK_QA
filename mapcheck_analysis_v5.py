@@ -273,6 +273,9 @@ def run_interactive_analysis():
     summary_data = {}
     collected_figures = []
 
+    summary_data["_measurement_date"] = date
+    summary_data["_device_serial"] = serial
+
     for test_name, config in TEST_SUITE_CONFIG.items():
         print(f"\nAnalyzing {test_name.replace('_', ' ').title()}...")
         required_paths = [role_to_path_map.get(role) for role in config['roles']]
