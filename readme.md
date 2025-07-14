@@ -1,6 +1,3 @@
-Of course! This is a fantastic script, and a good README.md file is essential for making it usable for yourself in the future and for anyone else you might share it with.
-Based on your code, here is a comprehensive README.md file. It explains the purpose, dependencies, usage, and key features like the automated file-finding convention.
-You can copy and paste the text below directly into a new file named README.md in your Git repository.
 MapCHECK QA Analysis Suite
 This Python script is a comprehensive tool for processing and analyzing data from Sun Nuclear MapCHECK devices. It automates the entire workflow from raw text file conversion to final report generation, significantly speeding up the quality assurance process.
 The script extracts the "Dose Interpolated" data from MapCHECK .txt files, performs a series of physics-based analyses, and outputs the results into a clean, multi-page PDF report and a machine-readable JSON file.
@@ -29,9 +26,9 @@ Bash
 How to Run
 Place your MapCHECK .txt files in a folder on your computer.
 Open a terminal or PowerShell/Command Prompt.
-Navigate to the directory where you saved mapcheck_analysis_v2.py.
+Navigate to the directory where you saved mapcheck_analysis_v5.py.
 Run the script with the following command:
-python mapcheck_analysis_v2.py
+python mapcheck_analysis_v5.py
 Use code with caution.
 Bash
 The script will then guide you through a series of dialog boxes:
