@@ -1,0 +1,19 @@
+{
+    "Leakage Central Value (Counts/Dose)": 0.0,
+    "Leakage Mean Value (Counts/Dose)": "Invalid (NaN)",
+    "Dose Rate Dependence Fit": "Error: too many values to unpack (expected 2)",
+    "Field Size Dependence Analysis": {
+        "Fit Slope (value/cm)": 0.5787994240903345,
+        "Fit Intercept (value)": 86.61359462414276,
+        "Measured Values": {
+            "5x5": 88.43050930322886,
+            "10x10": 93.83769878686674,
+            "25x25": 100.72455274594591
+        }
+    },
+    "Linearity Fit": {
+        "Slope (value/MU)": 0.9419706084059066,
+        "Intercept (value)": -0.2092580609731823
+    },
+    "Uniformity (Std Dev %)": 0.4434572711495638
+}
