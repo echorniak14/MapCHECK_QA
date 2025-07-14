@@ -1,7 +1,7 @@
 # this script generates a QA report from MapCHECK text files. It directly processes the .txt files,
 # looking for the 'Dose Interpolated' data block. It performs a suite of physics analyses,
 # then generates a multi-page PDF report and a companion JSON file for data logging and trending.
-# to run type: python mapcheck_analysis_v7.py
+# to run type: python mapcheck_analysis_v5.py
 
 import os
 import json
@@ -272,6 +272,9 @@ def run_interactive_analysis():
     print("\n--- STAGE 1: Performing Analyses & Generating Figures ---")
     summary_data = {}
     collected_figures = []
+
+    summary_data["_measurement_date"] = date
+    summary_data["_device_serial"] = serial
 
     for test_name, config in TEST_SUITE_CONFIG.items():
         print(f"\nAnalyzing {test_name.replace('_', ' ').title()}...")
