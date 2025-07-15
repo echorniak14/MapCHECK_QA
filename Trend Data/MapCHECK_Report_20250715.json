@@ -1,0 +1,24 @@
+{
+    "_measurement_date": "07/03/25",
+    "_device_serial": "276477001",
+    "Linearity Fit": {
+        "Slope": 0.9318868704890195,
+        "Intercept": -0.30657771235154896
+    },
+    "Dose Rate Fit": {
+        "Slope": 0.0041569276961696934,
+        "Intercept": 90.16481225663603
+    },
+    "Field Size Analysis": {
+        "Fit Slope": 0.552993362932335,
+        "Fit Intercept": 85.75467059840305,
+        "Measured Values": {
+            "5x5": 87.5036627458436,
+            "10x10": 92.63923711735444,
+            "25x25": 99.24084644930437
+        }
+    },
+    "Uniformity Std Dev": 0.5573088544246986,
+    "Leakage Central Value": 0.0,
+    "Leakage Mean Value": NaN
+}

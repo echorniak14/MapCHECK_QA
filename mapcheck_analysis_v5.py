@@ -186,6 +186,18 @@ def create_cover_page(pdf, report_title, serial, date, time, summary_data):
     ax.text(0.5, 0.05, f"Report Generated: {datetime.now():%Y-%m-%d %H:%M:%S}", ha='center', va='center', fontsize=10)
     ax.axis('off'); pdf.savefig(fig); plt.close(fig)
 
+def sanitize_for_json(data_dict):
+    """
+    Recursively loops through a dictionary to replace numpy NaN values with None,
+    which is compatible with the JSON standard (becomes 'null').
+    """
+    for key, value in data_dict.items():
+        if isinstance(value, dict):
+            sanitize_for_json(value)
+        elif isinstance(value, (float, np.floating)) and np.isnan(value):
+            data_dict[key] = None
+    return data_dict
+
 # --- Main Application Workflow ---
 def run_interactive_analysis():
     root = Tk()
@@ -321,14 +333,19 @@ def run_interactive_analysis():
     except Exception as e: messagebox.showerror("PDF Error", f"Could not generate PDF report:\n{e}")
 
     try:
+        # First, clean the dictionary of any NaN values before saving.
+        clean_summary_data = sanitize_for_json(summary_data)
+
         class NpEncoder(json.JSONEncoder):
             def default(self, obj):
                 if isinstance(obj, np.integer): return int(obj)
-                if isinstance(obj, np.floating): return float(obj) if not np.isnan(obj) else None
+                if isinstance(obj, np.floating): return float(obj)
                 if isinstance(obj, np.ndarray): return obj.tolist()
                 return super(NpEncoder, self).default(obj)
+        
         with open(json_path, "w") as f:
-            json.dump(summary_data, f, indent=4, cls=NpEncoder)
+            # Now dump the sanitized dictionary.
+            json.dump(clean_summary_data, f, indent=4, cls=NpEncoder)
         print(f"📊 Summary data saved to: {json_path}")
     except Exception as e: messagebox.showerror("JSON Error", f"Failed to save summary data to JSON:\n{e}")
 
