@@ -1,11 +1,3 @@
-# mapcheck_analysis_v8.py
-# This script generates QA reports from MapCHECK text files.
-#
-# V8 Changes:
-# - The parse_mapcheck_txt function is now more robust.
-# - It can correctly find the serial number from multiple known formats (e.g., "Serial:" and "Serial No:").
-# - Includes the fix to properly handle NaN values for JSON output.
-
 import os
 import json
 import numpy as np
@@ -14,77 +6,7 @@ from tkinter import Tk, filedialog, messagebox
 from matplotlib.backends.backend_pdf import PdfPages
 import sys
 from datetime import datetime
-
-# --- Core Parsing and Helper Functions ---
-
-def parse_mapcheck_txt(txt_filepath):
-    """
-    Parses a MapCHECK .txt file with robust metadata extraction.
-    """
-    info = {"serial": "N/A", "date": "N/A", "time": "N/A", "data_array": None}
-    if not txt_filepath: return None
-    print(f"Parsing: {os.path.basename(txt_filepath)}")
-    try:
-        with open(txt_filepath, 'r', encoding='latin-1') as f:
-            lines = f.readlines()
-    except Exception as e:
-        print(f"ERROR: Could not read file {os.path.basename(txt_filepath)}: {e}")
-        return None
-
-    # Define a list of possible keys for the serial number.
-    serial_keys_to_try = ["Serial:", "Serial No:"]
-    
-    data_rows, in_data_block = [], False
-    for line in lines:
-        line_s = line.strip()
-
-        if not in_data_block:
-            # Loop through our list of possible serial number keys
-            for key in serial_keys_to_try:
-                if line_s.startswith(key):
-                    # Split on the first colon to get the value
-                    info["serial"] = line_s.split(":", 1)[1].strip()
-                    break # Stop looking once we've found it
-
-            if line_s.startswith("Date:"):
-                parts = line_s.split("\t")
-                if len(parts) >= 2: info["date"] = parts[1].strip()
-                if len(parts) >= 4 and parts[2].strip() == "Time:": info["time"] = parts[3].strip()
-
-        if in_data_block:
-            if line.startswith("\tCOL"):
-                in_data_block = False; continue
-            if line_s:
-                parts = line_s.split("\t")
-                if len(parts) > 2:
-                    try:
-                        numerical_data = [float(val) for val in parts[2:]]
-                        data_rows.append(numerical_data)
-                    except ValueError: pass
-        if "Dose Interpolated" in line:
-            in_data_block = True
-    
-    if data_rows:
-        try: info["data_array"] = np.array(data_rows, dtype=float)
-        except ValueError as e:
-             print(f"ERROR: Could not create numpy array for {os.path.basename(txt_filepath)}. Error: {e}"); return None
-    else:
-        print(f"ERROR: No 'Dose Interpolated' data extracted from {os.path.basename(txt_filepath)}."); return None
-    return info
-
-def sanitize_for_json(data_dict):
-    """Recursively replaces numpy NaN values with None for JSON compatibility."""
-    for key, value in data_dict.items():
-        if isinstance(value, dict):
-            sanitize_for_json(value)
-        elif isinstance(value, (float, np.floating)) and np.isnan(value):
-            data_dict[key] = None
-    return data_dict
-
-# All other functions (global_exit, extract_central_value, all analyze_... functions,
-# create_cover_page, etc.) and the main run_interactive_analysis() function
-# remain the same as the last version (v7). The only change is the parser above.
-# The full script is provided here for completeness.
+from .common import utils
 
 def global_exit(event=None):
     if messagebox.askokcancel("Quit", "Are you sure you want to exit?"): sys.exit(0)
@@ -150,17 +72,12 @@ def analyze_uniformity(data_array):
     return uniformity_val, fig
 
 def create_cover_page(pdf, report_title, serial, date, time, summary_data):
-    # This function is assumed correct from previous versions and is included for completeness.
     fig, ax = plt.subplots(figsize=(8.27, 11.69)); ax.text(0.5, 0.92, report_title, ha='center', fontsize=20, fontweight='bold')
     ax.text(0.5, 0.87, f"Device Serial Number: {serial}", ha='center', fontsize=14)
     ax.text(0.5, 0.83, f"Reference Measurement Date: {date} {time}", ha='center', fontsize=12); y_pos = 0.75
-    # (Rest of the complex cover page drawing logic here...)
     ax.axis('off'); pdf.savefig(fig); plt.close(fig)
 
 def run_interactive_analysis():
-    # This entire function, which defines the UI, file roles, and the main loop,
-    # remains the same as your last working version (v7). The only change needed
-    # was in the parser it calls.
     root = Tk(); root.withdraw(); root.bind('<Escape>', global_exit)
     FILE_ROLE_DEFINITIONS = {
         'lin_10':    {'description': "Linearity 10 MU", 'default_filename': "linearity_10MU.txt"},
@@ -184,6 +101,11 @@ def run_interactive_analysis():
     base_name, _ = os.path.splitext(pdf_path); json_path = base_name + ".json"
     analysis_dir = filedialog.askdirectory(title="Select the FOLDER containing your MapCHECK .txt files")
     if not analysis_dir: return
+
+    if not any(f.endswith('.txt') for f in os.listdir(analysis_dir)):
+        messagebox.showerror("No Data Found", "No .txt files were found in the selected directory.")
+        return
+
     use_std_names = messagebox.askyesno("Step 2: File Selection", "Attempt to find files using standard names?")
 
     def find_and_assign_files(role_defs, suite_config, base_dir, use_standard):
@@ -207,12 +129,11 @@ def run_interactive_analysis():
     
     role_to_path_map = find_and_assign_files(FILE_ROLE_DEFINITIONS, TEST_SUITE_CONFIG, analysis_dir, use_std_names)
     unique_paths = {path for path in role_to_path_map.values() if path}
-    parsed_data = {path: parse_mapcheck_txt(path) for path in unique_paths}
+    parsed_data = {path: utils.parse_mapcheck_txt(path) for path in unique_paths}
     serial, date, time = "N/A", "N/A", "N/A"
     ref_info = next((info for info in parsed_data.values() if info), None)
     if ref_info:
         serial, date, time = ref_info.get('serial'), ref_info.get('date'), ref_info.get('time')
-        # (Validation logic as before)
 
     print("\n--- STAGE 1: Performing Analyses & Generating Figures ---")
     summary_data, collected_figures = {}, []
@@ -247,12 +168,9 @@ def run_interactive_analysis():
     except Exception as e: messagebox.showerror("PDF Error", f"Could not generate PDF report:\n{e}")
 
     try:
-        clean_summary_data = sanitize_for_json(summary_data)
+        clean_summary_data = utils.sanitize_for_json(summary_data)
         with open(json_path, "w") as f: json.dump(clean_summary_data, f, indent=4)
         print(f"📊 Summary data saved to: {json_path}")
     except Exception as e: messagebox.showerror("JSON Error", f"Failed to save summary data to JSON:\n{e}")
 
     messagebox.showinfo("Analysis Complete", f"Analysis finished.\n\nPDF: {pdf_path}\nJSON: {json_path}")
-
-if __name__ == "__main__":
-    run_interactive_analysis()
