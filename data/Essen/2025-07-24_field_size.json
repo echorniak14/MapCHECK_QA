@@ -1,0 +1,13 @@
+{
+    "_measurement_date": "06/04/25",
+    "_device_serial": "276477001",
+    "Field Size Analysis": {
+        "Fit Slope": 0.5787994240903345,
+        "Fit Intercept": 86.61359462414276,
+        "Measured Values": {
+            "5x5": 88.43050930322886,
+            "10x10": 93.83769878686674,
+            "25x25": 100.72455274594591
+        }
+    }
+}

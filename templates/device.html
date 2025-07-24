@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ device_name }} - QA Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <a href="{{ url_for('index') }}">&larr; Back to Dashboard</a>
+    <h1>Device: {{ device_name }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+            {% for category, message in messages %}
+                <div class="{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div>
+        <a href="{{ url_for('upload_page', device_name=device_name) }}"><button>Run New Analysis</button></a>
+        <p>Upload raw .txt data files from the MapCHECK device to process and add to this device's history.</p>
+    </div>
+
+    <div>
+        <button>Generate Trend Report</button>
+        <p>Analyze the historical data for this device to visualize its performance trends over time.</p>
+    </div>
+
+    <div>
+        <button>Compare Data</button>
+        <p>Compare this device's QA results against another device in the system.</p>
+    </div>
+
+    <h2>Historical Data</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Date of Test</th>
+                <th>Analysis Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in history %}
+            <tr>
+                <td>{{ item.date }}</td>
+                <td>{{ item.analysis_type }}</td>
+                <td>
+                    <a href="{{ url_for('serve_file', device_name=device_name, filename=item.pdf_name) }}" target="_blank">View PDF</a>
+                    <a href="{{ url_for('serve_file', device_name=device_name, filename=item.json_name) }}" download>Download JSON</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No history found for this device.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

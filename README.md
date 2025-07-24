@@ -14,6 +14,27 @@ This project provides a suite of Python tools for processing, analyzing, and int
 - Python 3.x
 - The following Python libraries: `numpy`, `matplotlib`, `pandas`
 
+## Reminder for CLI Users
+
+To activate the interactive features of this tool, type `gemini` in your active terminal before providing a prompt. This will enable you to access the full range of capabilities, including file system operations and running tests.
+
+To run the web application and see live updates, you'll need to have two terminals open.
+
+**In your new terminal:**
+
+1.  Navigate to the project directory:
+    ```bash
+    cd C:\Users\echorniak\GIT\MapCHECK_QA
+    ```
+2.  Run the Flask web application:
+    ```bash
+    python webapp.py
+    ```
+
+This will start the web server. You will see output in that terminal, including a URL like `* Running on http://127.0.0.1:5000`. You can open this URL in your browser to interact with the app.
+
+Leave that terminal running. You can continue to chat with me in your original terminal to make changes to the code. The web server should automatically reload most changes we make to the Python files.
+
 ## Installation
 
 1. Clone this repository.
