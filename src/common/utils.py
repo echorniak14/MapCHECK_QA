@@ -139,14 +139,16 @@ def load_external_data_and_get_tests(csv_path):
         messagebox.showerror("CSV Error", f"Could not read or parse the CSV file.\nError: {e}")
         return None, None
 
-def get_user_choice(prompt, options):
-    """Generic function to get a user's choice from a list."""
-    print(f"\n{prompt}")
-    menu = {str(i): opt for i, opt in enumerate(options, 1)}
-    for i, opt in menu.items(): print(f"  {i}. {opt.replace('_', ' ').title()}")
-    print("  Q. Quit")
-    while True:
-        choice = input("Enter your choice: ").strip().upper()
-        if choice == 'Q': return None
-        if choice in menu: return menu[choice]
-        print("Invalid choice.")
+def parse_metadata_from_file(file_path):
+    metadata = {}
+    with open(file_path, 'r') as f:
+        for line in f:
+            if line.strip().startswith('Model:'):
+                metadata['Model'] = line.split(':')[1].strip()
+            elif line.strip().startswith('Serial:'):
+                metadata['Serial'] = line.split(':')[1].strip()
+            elif line.strip().startswith('Software Version:'):
+                metadata['Software Version'] = line.split(':')[1].strip()
+            elif line.strip().startswith('Calibration File:'):
+                metadata['Calibration File'] = line.split(':')[1].strip()
+    return metadata

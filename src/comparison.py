@@ -1,20 +1,48 @@
 import os
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from tkinter import Tk, filedialog, messagebox
 from .common import utils
+from .trending import TRENDABLE_METRICS
 
-def plot_device_comparison(records, metric_key, metric_name):
-    """
-    Generates a trend plot, creating separate, color-coded lines for each device.
-    """
-    serial_numbers = sorted(list({rec["serial_number"] for rec in records}))
+def generate_web_comparison_plot(device_names, metric_key, static_dir):
+    all_data = []
+    for device_name in device_names:
+        json_folder = os.path.join('data', device_name)
+        device_data = utils.load_all_json_data(json_folder)
+        for record in device_data:
+            record['device_name'] = device_name  # Add device name to each record
+        all_data.extend(device_data)
 
+    if not all_data:
+        return None, "No data found for the selected devices."
+
+    metric_name = TRENDABLE_METRICS.get(metric_key)
+    if not metric_name:
+        return None, f"Invalid metric key: {metric_key}"
+
+    plot_filename = f"comparison_{'_'.join(device_names)}_{metric_key}.png"
+    output_path = os.path.join(static_dir, plot_filename)
+
+    if not os.path.exists(static_dir):
+        os.makedirs(static_dir)
+
+    # The plot_device_comparison function needs to be adapted to work without tkinter
+    # and to save the plot to a file.
+    success = plot_device_comparison_web(all_data, metric_key, metric_name, output_path)
+
+    if success:
+        return plot_filename, None
+    else:
+        return None, f"Failed to generate comparison plot for {metric_name}."
+
+def plot_device_comparison_web(records, metric_key, metric_name, output_path):
     fig, ax = plt.subplots(figsize=(12, 7))
     has_data_to_plot = False
 
-    for serial in serial_numbers:
-        device_records = [rec for rec in records if rec["serial_number"] == serial]
+    device_names = sorted(list({rec["device_name"] for rec in records}))
+
+    for device_name in device_names:
+        device_records = [rec for rec in records if rec["device_name"] == device_name]
         
         dates = [rec["date"] for rec in device_records if rec.get(metric_key) is not None]
         values = [rec[metric_key] for rec in device_records if rec.get(metric_key) is not None]
@@ -22,12 +50,11 @@ def plot_device_comparison(records, metric_key, metric_name):
         if len(dates) >= 1:
             has_data_to_plot = True
             linestyle = '-' if len(dates) > 1 else ''
-            ax.plot(dates, values, marker='o', linestyle=linestyle, label=f"Device: {serial}")
+            ax.plot(dates, values, marker='o', linestyle=linestyle, label=f"Device: {device_name}")
 
     if not has_data_to_plot:
-        messagebox.showwarning("Not Enough Data", f"Cannot create a plot for '{metric_name}'.\nNo valid data points were found for any device.")
         plt.close(fig)
-        return
+        return False
 
     ax.set_title(f"Device Comparison for {metric_name}", fontsize=16)
     ax.set_xlabel("Measurement Date", fontsize=12)
@@ -37,40 +64,8 @@ def plot_device_comparison(records, metric_key, metric_name):
     ax.grid(True, which='both', linestyle='--', linewidth=0.5)
     ax.legend()
     plt.tight_layout()
-    plt.show()
+    plt.savefig(output_path)
+    plt.close(fig)
+    return True
 
-def run_comparison(json_folder):
-    root = Tk()
-    root.withdraw()
 
-    if not json_folder:
-        messagebox.showinfo("Select Data Folder", "Please select the folder containing your MapCHECK JSON files for comparison.")
-        json_folder = filedialog.askdirectory(title="Select Folder with JSON files")
-        if not json_folder:
-            print("No folder selected. Exiting.")
-            return
-
-    all_data = utils.load_all_json_data(json_folder)
-
-    if not all_data:
-        messagebox.showerror("No Data Found", "No valid JSON files could be processed. Please check console for details.");
-        return
-        
-    print(f"\n--- Successfully loaded {len(all_data)} data point(s) from {len(set(rec['serial_number'] for rec in all_data))} device(s). ---")
-    
-    TRENDABLE_METRICS = {
-        "linearity_slope": "Linearity Slope",
-        "dose_rate_slope": "Dose Rate Slope",
-        "fs_slope": "Field Size Fit Slope",
-        "uniformity": "Uniformity (Std Dev %)",
-        "leakage_mean": "Mean Leakage Value",
-    }
-    
-    while True:
-        metric_to_plot = utils.get_user_choice("Please choose a parameter to compare across devices:", TRENDABLE_METRICS)
-        
-        if metric_to_plot is None:
-            print("Exiting application.")
-            break
-        
-        plot_device_comparison(all_data, metric_to_plot, TRENDABLE_METRICS[metric_to_plot])

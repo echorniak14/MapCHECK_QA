@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Devices</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Compare Device Performance</h1>
+        <div class="card">
+            <div class="card-header">
+                <h2>Generate Comparison Plot</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label for="devices">Select Devices to Compare:</label>
+                        <select name="devices" id="devices" class="form-control" multiple required>
+                            {% for device in all_devices %}
+                                <option value="{{ device }}" {% if device in selected_devices %}selected{% endif %}>{{ device }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="metric">Select Metric:</label>
+                        <select name="metric" id="metric" class="form-control" required>
+                            {% for key, name in metrics.items() %}
+                                <option value="{{ key }}" {% if key == selected_metric %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Plot</button>
+                </form>
+            </div>
+        </div>
+
+        {% if plot_url %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2>Comparison Plot for {{ selected_metric_name }}</h2>
+            </div>
+            <div class="card-body">
+                <img src="{{ plot_url }}" alt="Comparison Plot" class="img-fluid">
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <a href="{{ url_for('index') }}" class="btn">Back to All Devices</a>
+        </div>
+    </div>
+</body>
+</html>

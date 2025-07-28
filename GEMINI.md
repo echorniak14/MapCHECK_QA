@@ -6,11 +6,11 @@ The project's primary objective is to create a powerful, user-friendly, and auto
 
 ## Current Architecture
 
-The project has been refactored from a set of individual scripts into a modular, command-line-driven application.
+The project has been refactored into a modular, web-based application.
 
-- **Entry Point**: `app.py` is the main script that provides a menu to the user to select which analysis to run.
+- **Entry Point**: `webapp.py` is the main script that runs the Flask web application.
 - **Source Code**: All Python source code is located in the `src/` directory.
-- **Modules**:
+- **Modules**: The `src/` directory contains the core logic for various functionalities:
     - `src/analysis.py`: Handles the initial processing of raw `.txt` files from the MapCHECK device, generating detailed PDF and JSON reports.
     - `src/comparison.py`: Compares QA trends across multiple devices using the generated JSON files.
     - `src/correlation.py`: Correlates MapCHECK QA data with external data sources (e.g., CSV files).

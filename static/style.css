@@ -1,0 +1,140 @@
+
+body {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: sans-serif;
+    margin: 2em;
+}
+
+h1, h2 {
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+a {
+    color: #9cdcfe;
+}
+
+a:hover {
+    color: #4fc1ff;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background-color: #2a2a2a;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+form {
+    margin-top: 20px;
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+input[type="text"] {
+    background-color: #3c3c3c;
+    color: #d4d4d4;
+    border: 1px solid #555;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+button, input[type="submit"] {
+    background-color: #0e639c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #1177bb;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #2a2a2a;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #252526;
+}
+
+tbody tr:hover {
+    background-color: #3e3e42;
+}
+
+div {
+    background-color: #2a2a2a;
+    padding: 1.5em;
+    margin-bottom: 1em;
+    border-radius: 8px;
+}
+
+div > p {
+    color: #a0a0a0;
+    margin-top: 0.5em;
+}
+
+/* Flash messages */
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin: 1em 0;
+}
+
+.flashes .success {
+    background-color: #1e4e24;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.flashes .error {
+    background-color: #641e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Analysis type confirmation box */
+#analysis-types-container {
+    border: 2px solid #e6a23c; /* A warning color */
+    padding: 1.5em;
+    margin-top: 1.5em;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+}
+
+#analysis-types-container h3 {
+    margin-top: 0;
+    color: #e6a23c;
+}

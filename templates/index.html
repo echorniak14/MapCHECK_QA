@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapCHECK QA Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>MapCHECK QA Dashboard</h1>
+    
+    <h2>Devices</h2>
+    <ul>
+        {% for device in devices %}
+            <li><a href="{{ url_for('device', device_name=device) }}">{{ device }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Add New Device</h2>
+    <form action="{{ url_for('add_device') }}" method="post" enctype="multipart/form-data">
+        <label for="device_name">Device Name:</label>
+        <input type="text" id="device_name" name="device_name" required>
+        <label for="sample_file">Sample File:</label>
+        <input type="file" id="sample_file" name="sample_file" accept=".txt" required>
+        <button type="submit">Add Device</button>
+    </form>
+    <p class="instructions">Upload a sample `.txt` file from the device. The system will automatically extract metadata like the serial number and model, which will be displayed on the device's page.</p>
+</body>
+</html>
