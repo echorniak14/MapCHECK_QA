@@ -10,6 +10,15 @@
     <a href="{{ url_for('index') }}">&larr; Back to Dashboard</a>
     <h1>Device: {{ device_name }}</h1>
 
+    {% if metadata %}
+    <h2>Device Metadata</h2>
+    <ul>
+        {% for key, value in metadata.items() %}
+            <li><strong>{{ key }}:</strong> {{ value }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="flashes">
@@ -26,13 +35,21 @@
     </div>
 
     <div>
-        <button>Generate Trend Report</button>
+        <a href="{{ url_for('trends_page', device_name=device_name) }}"><button>Generate Trend Report</button></a>
         <p>Analyze the historical data for this device to visualize its performance trends over time.</p>
     </div>
 
     <div>
-        <button>Compare Data</button>
+        <a href="{{ url_for('compare_page') }}"><button>Compare Data</button></a>
         <p>Compare this device's QA results against another device in the system.</p>
+    </div>
+
+    <div>
+        <form action="{{ url_for('rename_device', device_name=device_name) }}" method="POST" style="display: inline;">
+            <input type="text" name="new_device_name" placeholder="New device name" required>
+            <button type="submit">Rename Device</button>
+        </form>
+        <p>Rename this device. This action will update the device's name across the application.</p>
     </div>
 
     <h2>Historical Data</h2>
@@ -61,6 +78,28 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <hr>
+
+    <h2>Delete Device</h2>
+    <form id="delete-form" action="{{ url_for('delete_device', device_name=device_name) }}" method="POST" onsubmit="return confirmDelete();">
+        <input type="hidden" name="password" id="delete-password">
+        <button type="submit" class="btn-danger">Delete This Device</button>
+        <p class="instructions">This action will permanently delete the device and all its associated data. This action is irreversible and requires a password.</p>
+    </form>
+
+    <script>
+        function confirmDelete() {
+            const password = prompt("To delete this device, please enter the password:");
+            if (password === 'mbpcc1') {
+                document.getElementById('delete-password').value = password;
+                return confirm("Are you sure you want to permanently delete this device and all its data?");
+            } else if (password !== null) {
+                alert("Incorrect password.");
+            }
+            return false;
+        }
+    </script>
 
 </body>
 </html>

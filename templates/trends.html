@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trend Analysis for {{ device_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Trend Analysis for {{ device_name }}</h1>
+        <div class="card">
+            <div class="card-header">
+                <h2>Generate Trend Plot</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label for="metric">Select Metric:</label>
+                        <select name="metric" id="metric" class="form-control">
+                            {% for key, name in metrics.items() %}
+                                <option value="{{ key }}" {% if key == selected_metric %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Plot</button>
+                </form>
+            </div>
+        </div>
+
+        {% if plot_url %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2>Trend Plot for {{ selected_metric_name }}</h2>
+            </div>
+            <div class="card-body">
+                <img src="{{ plot_url }}" alt="Trend Plot" class="img-fluid">
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <a href="{{ url_for('device', device_name=device_name) }}" class="btn">Back to {{ device_name }}</a>
+            <a href="{{ url_for('index') }}" class="btn">Back to All Devices</a>
+        </div>
+    </div>
+</body>
+</html>
